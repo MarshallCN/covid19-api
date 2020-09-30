@@ -1,6 +1,6 @@
 const express =  require('express')
 const app = express();
-
+const port = process.env.PORT || 3000
 // =================自定义全局级别中间件==================
 function valid_name_middleware(req, res, next){
     let {id} = req.query;
@@ -60,6 +60,6 @@ app.use(not_found_handler)
 app.use(error_handler_middleware)
 
 // ==========================端口监听==========================
-app.listen(3000,()=>{
+app.listen(port,()=>{
     console.log('Service Start')
 })
