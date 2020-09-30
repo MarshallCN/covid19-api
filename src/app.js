@@ -6,7 +6,7 @@ function valid_name_middleware(req, res, next){
     let {id} = req.query;
     if(typeof(id)=="undefined" || id.length==0){
         res.json({
-            msg: 'must have an id'
+            msg: 'must have an id!'
         })
     }else{
         next(); //交出控制权
