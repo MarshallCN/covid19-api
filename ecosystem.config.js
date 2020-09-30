@@ -2,7 +2,7 @@ module.exports = {
   apps : [{
     name: 'covid19-api',
     script: './src/app.js',
-    //watch: '.',
+    watch: '.',
     env: {
       NODE_ENV: "development"
     },
