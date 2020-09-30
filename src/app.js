@@ -1,6 +1,17 @@
-const express =  require('express')
+const express =  require('express');
+const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000
+
+// allow all CORS
+app.use(cors())
+// Allow for specified origin
+var corsOptions = {
+    origin: 'http://localhost:8080',
+    optionsSuccessStatus: 200 // For legacy browser support
+}
+// app.use(cors(corsOptions));
+
 // =================自定义全局级别中间件==================
 function valid_name_middleware(req, res, next){
     let {id} = req.query;
@@ -15,7 +26,7 @@ function valid_name_middleware(req, res, next){
 app.use(valid_name_middleware); //最优先检测id
 
 // ======================GET, POST requests==============
-app.get('/:category', (req, res, next)=>{
+app.get('/:category', cors(), (req, res, next)=>{
     try{
         let {category} = req.params
         let {id, flag} = req.query
@@ -31,7 +42,8 @@ app.get('/:category', (req, res, next)=>{
 
 app.post('/form', (req, res)=>{
     res.json({
-        url: req.path
+        url: req.path,
+        msg: "POST data succuessfuly!"
     })
 })
 
