@@ -1,53 +1,58 @@
 const express =  require('express');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000 //default Heroku's port
 
 // allow all CORS
 app.use(cors())
 // Allow for specified origin
-var corsOptions = {
-    origin: 'http://localhost:8080',
-    optionsSuccessStatus: 200 // For legacy browser support
-}
+// var corsOptions = {
+//     origin: 'http://localhost:8080',
+//     optionsSuccessStatus: 200 // For legacy browser support
+// }
 // app.use(cors(corsOptions));
 
-// =================自定义全局级别中间件==================
-function valid_name_middleware(req, res, next){
-    let {id} = req.query;
-    if(typeof(id)=="undefined" || id.length==0){
-        res.json({
-            msg: 'must have an id!'
-        })
-    }else{
-        next(); //交出控制权
-    }
-}
-app.use(valid_name_middleware); //最优先检测id
+// =================Global Middleware==================
+// function valid_name_middleware(req, res, next){
+//     let {token} = req.query;
+//     if(typeof(token)=="undefined" || token.length==0){
+//         res.json({
+//             msg: 'must have a token!'
+//         })
+//     }else{
+//         next(); 
+//     }
+// }
+// app.use(valid_name_middleware); //最优先检测token
 
-// ======================GET, POST requests==============
-app.get('/:category', cors(), (req, res, next)=>{
-    try{
-        let {category} = req.params
-        let {id, flag} = req.query
-        res.json({
-            category,
-            id,
-            flag,
-        })
-    }catch(err){
-        next(err)
-    }
-})
+// ===================MAIN FUNCTIONS====================
+const memberRouter = require('./router/quiz');
 
-app.post('/form', (req, res)=>{
-    res.json({
-        url: req.path,
-        msg: "POST data succuessfuly!"
-    })
-})
+app.use('/quiz', cors(), memberRouter) 
 
-// ==========处理异常的应用级中间件，也可路由级=============
+
+// app.get('/:category', cors(), (req, res, next)=>{
+//     try{
+//         let {category} = req.params
+//         let {id, flag} = req.query
+//         res.json({
+//             category,
+//             id,
+//             flag,
+//         })
+//     }catch(err){
+//         next(err)
+//     }
+// })
+
+// app.post('/form', (req, res)=>{
+//     res.json({
+//         url: req.path,
+//         msg: "POST data succuessfuly!"
+//     })
+// })
+
+// =====================Error Handler========================
 function error_handler_middleware(err, req, res ,next){
     if(err){
         let {message} = err;
@@ -60,18 +65,17 @@ function error_handler_middleware(err, req, res ,next){
     }
 }
 
-// 定义一个404中间件,由于404找不到不是异常，所以参数没有err对象
+// 404 error
 function not_found_handler(req,res,next){
     res.json({
         msg: 'api 404 not found'
     })
 }
 
-//异常处理放在所有路由最后面
 app.use(not_found_handler)
 app.use(error_handler_middleware)
 
-// ==========================端口监听==========================
+// ==========================Port Listening==========================
 app.listen(port,()=>{
     console.log('Service Start')
 })
