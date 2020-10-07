@@ -1,3 +1,5 @@
+var data = [{"id":2,"questions":"Do you need to keep social distance when you wear a face mask?","option":"Yes","opt_index":"a","correct":true},{"id":2,"questions":"Do you need to keep social distance when you wear a face mask?","option":"No","opt_index":"b","correct":false},{"id":1,"questions":"How far do you need to stand from someone in the UK?","option":"1m","opt_index":"a","correct":false},{"id":1,"questions":"How far do you need to stand from someone in the UK?","option":"1.5m","opt_index":"b","correct":true},{"id":1,"questions":"How far do you need to stand from someone in the UK?","option":"2m","opt_index":"c","correct":false},{"id":1,"questions":"How far do you need to stand from someone in the UK?","option":"3m","opt_index":"d","correct":false}]
+
 // reduce
 var res_json = data.reduce((pv, cv)=>{
     if (pv[cv.id]) {

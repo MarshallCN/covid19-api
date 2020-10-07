@@ -25,6 +25,18 @@ router.get('/topics',(req, res, next)=>{
     }
 })
 
+router.get('/type',(req, res, next)=>{
+    try{
+        client.query('SELECT * from ques_type;', (err, data) => {
+        if (err) next(err);
+        res.json(data.rows)
+        // client.end();
+        });
+    }catch(err){
+        next(err)
+    }
+})
+
 router.get('/list', (req, res, next)=>{
     try{
         let {level, topic, type, page} = req.query
@@ -34,8 +46,8 @@ router.get('/list', (req, res, next)=>{
         page = page|'1'
         let limit = 10;
         let offset = Math.abs((parseInt(page)-1)*limit) || 0;
-        COND = "where level in ("+level+") and topicid in ("+topic+")"
-        SQL = "select q.id,q.questions,o.option,o.opt_index,o.correct from quiz as q \
+        COND = "where level in ("+level+") and topicid in ("+topic+") and typeid in ("+type+")"
+        SQL = "select q.id,q.typeid,q.questions,o.option,o.opt_index,o.correct from quiz as q \
         inner join options as o on q.id=o.ques_id "+COND+" LIMIT "+limit+" OFFSET "+offset;
 
         client.query(SQL, (err, data) => {
@@ -49,6 +61,7 @@ router.get('/list', (req, res, next)=>{
                         pv[cv.id] = {'question':cv.questions}
                         pv[cv.id]['options'] = {}
                         pv[cv.id]['options'][cv.opt_index] = cv.option
+                        pv[cv.id]['type'] = cv.typeid
                     }
                     if (cv.correct){
                         pv[cv.id]['ca'] = cv.opt_index
