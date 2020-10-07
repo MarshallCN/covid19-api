@@ -1,42 +1,63 @@
 const express = require('express');
 const router = express.Router();
-const pgp = require('pg-promise')
+// const pgp = require('pg-promise')(/* options */)
+
+const { Client } = require('pg');
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+client.connect();
 
 router.get('/topics',(req, res, next)=>{
-    let db = pgp('postgres://jqbcfloatsioxw:9874b43481cf61ae5595b3d32b111173ba7aead2b56e25923a194b93de67b28d@ec2-3-248-4-172.eu-west-1.compute.amazonaws.com:5432/d57inj6fclkq56')
-    db.any('SELECT * from topics')
-    .then((data)=>{
-        res.json({
-            data
-        })
-    })
-    .catch((err)=>{
+    try{
+        client.query('SELECT * from topics;', (err, data) => {
+        if (err) next(err);
+        res.json(data.rows)
+        // client.end();
+        });
+    }catch(err){
         next(err)
-    })
+    }
 })
 
 router.get('/list', (req, res, next)=>{
     try{
-        let {type, level, uid} = req.query
-        res.json({
-            type,
-            level,
-            uid,
-            quiz:{
-                ques1:{
-                    ask: "How far do you need to stand from someone in the UK?",
-                    options: {
-                        a: "1m", b: "1.5m", c:"2m", d:"3m", ca: "c" 
+        let {level, topic, type, page} = req.query
+        level = level? level: 'SELECT DISTINCT LEVEL FROM QUIZ'
+        topic = topic? topic: 'SELECT ID FROM TOPICS'
+        topic = topic? topic: 'SELECT ID FROM QUES_TYPE'
+        page = page|'1'
+        let limit = 10;
+        let offset = Math.abs((parseInt(page)-1)*limit) || 0;
+        COND = "where level in ("+level+") and topicid in ("+topic+")"
+        SQL = "select q.id,q.questions,o.option,o.opt_index,o.correct from quiz as q \
+        inner join options as o on q.id=o.ques_id "+COND+" LIMIT "+limit+" OFFSET "+offset;
+
+        client.query(SQL, (err, data) => {
+            if (err) next(err);
+            res.json(
+                data.rows.reduce((pv, cv)=>{
+                    if (pv[cv.id]) {
+                        pv[cv.id]['options'][cv.opt_index] = cv.option
                     }
-                },
-                ques2:{
-                    ask: "Do you need to keep social distance when you wear a face mask?",
-                    options:{
-                        a: "Yes", b: "No", ca:"a"
+                    else{
+                        pv[cv.id] = {'question':cv.questions}
+                        pv[cv.id]['options'] = {}
+                        pv[cv.id]['options'][cv.opt_index] = cv.option
                     }
-                }
-            }
-        })
+                    if (cv.correct){
+                        pv[cv.id]['ca'] = cv.opt_index
+                    }
+                    return pv;
+                }, {})
+            )
+            // client.end();
+        });
     }catch(err){
         next(err)
     }
