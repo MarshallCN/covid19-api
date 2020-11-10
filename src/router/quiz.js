@@ -36,7 +36,7 @@ router.get('/type',(req, res, next)=>{
         next(err)
     }
 })
-
+// https://covid19smp.herokuapp.com/quiz/list?level=1&topic=2&type=1
 router.get('/list', (req, res, next)=>{
     try{
         let {level, topic, type, page} = req.query

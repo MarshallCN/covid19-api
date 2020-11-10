@@ -9,6 +9,7 @@ var res_json = data.reduce((pv, cv)=>{
         pv[cv.id] = {'question':cv.questions}
 		pv[cv.id]['options'] = {}
 		pv[cv.id]['options'][cv.opt_index] = cv.option
+		pv[cv.id]['type'] = cv.typeid
     }
 	if (cv.correct){
 		pv[cv.id]['ca'] = cv.opt_index
