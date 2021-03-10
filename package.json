@@ -1,5 +1,5 @@
 {
-  "name": "Covid19_backend",
+  "name": "covid19_backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "preinstall": "npm install pm2 -g",
     "start": "pm2-runtime start ecosystem.config.js --env production",
     "dev": "pm2 start ecosystem.config.js",
-    "test": "nodemon ./src/app.js"
+    "test": "nodemon ./src/myapp.js"
   },
   "keywords": [],
   "author": "",

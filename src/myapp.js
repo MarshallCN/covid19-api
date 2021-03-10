@@ -25,32 +25,40 @@ app.use(cors())
 // }
 // app.use(valid_name_middleware); //最优先检测token
 
+// ====================Static Pages====================
+// app.use(express.static('static',{
+//     extensions:['html'] // 访问127.0.0.1:3000/index自动添加html后缀
+// }))
+
+
 // ===================MAIN FUNCTIONS====================
 const memberRouter = require('./router/quiz');
 
 app.use('/quiz', cors(), memberRouter) 
 
 
-// app.get('/:category', cors(), (req, res, next)=>{
-//     try{
-//         let {category} = req.params
-//         let {id, flag} = req.query
-//         res.json({
-//             category,
-//             id,
-//             flag,
-//         })
-//     }catch(err){
-//         next(err)
-//     }
-// })
+app.get('/:category', cors(), (req, res, next)=>{
+    try{
+        let {category} = req.params
+        let {id, flag} = req.query
+        res.json({
+            category,
+            id,
+            flag,
+        })
+    }catch(err){
+        next(err)
+    }
+})
 
-// app.post('/form', (req, res)=>{
-//     res.json({
-//         url: req.path,
-//         msg: "POST data succuessfuly!"
-//     })
-// })
+
+
+app.post('/form', (req, res)=>{
+    res.json({
+        url: req.path,
+        msg: "POST data succuessfuly!"
+    })
+})
 
 // =====================Error Handler========================
 function error_handler_middleware(err, req, res ,next){
